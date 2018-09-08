@@ -27,6 +27,12 @@ contract CDFTestHelper {
         CDF.writeChunkBytes(chunkDataPosition_, chunkDataOffset, buffer);
     }
 
+    function readChunkBytes(uint chunkDataPosition_, uint chunkDataOffset, uint chunkDataLength) public view
+            returns (bytes result)
+    {
+        return CDF.readChunkBytes(chunkDataPosition_, chunkDataOffset, chunkDataLength);
+    }
+
     function load_slot(uint position) public view returns (uint slot) {
         return CDF.load_slot(position);
     }

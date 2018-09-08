@@ -58,6 +58,7 @@ contract('CDF', function(accounts) {
             new web3.BigNumber(0x00080001).mul(0x100000000).add(1)));
     });
 
+
     // writeChunkBytes(uint chunkDataPosition, uint chunkDataOffset, bytes buffer)
 
     it("test writeChunkBytes from scratch", async function() {
@@ -126,5 +127,62 @@ contract('CDF', function(accounts) {
         assert((await instance.load_slot(1100000)).eq(new web3.BigNumber('0xffffffffffffffffffffffffffffffffffffffffffffffffffff060504030201')));
         assert((await instance.load_slot(1100001)).eq(new web3.BigNumber('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff')));
         assert((await instance.load_slot(1100002)).eq(new web3.BigNumber('0xaaab')));
+    });
+
+
+    // readChunkBytes(uint chunkDataPosition_, uint chunkDataOffset, uint chunkDataLength)
+
+    async function checkRW(instance, position, offset, data) {
+        const dataLength = (data.length - 2) / 2;
+        await instance.writeChunkBytes(position, offset, data);
+        assert.equal(await instance.readChunkBytes(position, offset, dataLength), data);
+    }
+
+    it("test readChunkBytes from scratch", async function() {
+        const instance = await CDF.deployed();
+
+        await checkRW(instance, 200000, 0, '0x00');
+        await checkRW(instance, 300000, 0, '0x01');
+        await checkRW(instance, 400000, 0, '0x0109');
+    });
+
+    it("test readChunkBytes append in the same slot", async function() {
+        const instance = await CDF.deployed();
+
+        await checkRW(instance, 500000, 0, '0x010203040506');
+        await checkRW(instance, 500000, 6, '0x07');
+
+        await checkRW(instance, 600000, 0, '0x010203040506');
+        await checkRW(instance, 600000, 6, '0x0708');
+    });
+
+    it("test readChunkBytes append which fills slot", async function() {
+        const instance = await CDF.deployed();
+
+        await checkRW(instance, 700000, 0, '0x010203040506');
+        await checkRW(instance, 700000, 6, '0xffffffffffffffffffffffffffffffffffffffffffffffffffff');
+    });
+
+    it("test readChunkBytes overflows to the next slot", async function() {
+        const instance = await CDF.deployed();
+
+        await checkRW(instance, 800000, 0, '0x01020304050607');
+        await checkRW(instance, 800000, 7, '0xffffffffffffffffffffffffffffffffffffffffffffffffffff');
+    });
+
+    it("test readChunkBytes append which fills many slots", async function() {
+        const instance = await CDF.deployed();
+
+        await checkRW(instance, 900000, 0, '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff');
+
+        await checkRW(instance, 1000000, 0, '0x010203040506');
+        await checkRW(instance, 1000000, 6, '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff');
+    });
+
+    it("test readChunkBytes append which fills many slots and overflows", async function() {
+        const instance = await CDF.deployed();
+
+        await checkRW(instance, 1100000, 0, '0x010203040506');
+        await checkRW(instance, 1100000, 6, '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffabaa');
     });
 });

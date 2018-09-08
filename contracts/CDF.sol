@@ -85,6 +85,33 @@ library CDF {
         }
     }
 
+    /**
+     * @dev reads sequential portion of a chunk
+     * @param chunkDataPosition_ storage pointer to the beginning of a chunk
+     * @param chunkDataOffset offset in bytes(!) from the beginning of a chunk
+     * @param chunkDataLength length in bytes(!) of the fragment to read
+     */
+    function readChunkBytes(uint chunkDataPosition_, uint chunkDataOffset, uint chunkDataLength) internal view
+            returns (bytes result)
+    {
+        result = new bytes(chunkDataLength);
+        uint resultOffset;
+
+        uint currentSlotPosition = chunkDataPosition_ + chunkDataOffset / 32;
+        uint slot = load_slot(currentSlotPosition);
+        uint slotOffset = chunkDataOffset % 32;
+
+        while (resultOffset != chunkDataLength) {
+            assert(slotOffset < 32);
+            result[resultOffset++] = byte(0xFF & (slot >> (slotOffset++ * 8)));
+            if (32 == slotOffset) {
+                currentSlotPosition++;
+                slot = load_slot(currentSlotPosition);
+                slotOffset = 0;
+            }
+        }
+    }
+
     function load_slot(uint position) internal view returns (uint slot) {
         assembly {
             slot := sload(position)
@@ -119,6 +146,8 @@ library CDF {
         }
     }
 
+
+
     function writeUint32(uint32 data) internal pure returns (bytes converted) {
         converted = new bytes(4);
         converted[0] = byte(data & 0xFF);
@@ -127,6 +156,7 @@ library CDF {
         converted[3] = byte((data >> 24) & 0xFF);
         return converted;
     }
+
 
     function writeAddress(address data) internal pure returns (bytes converted) {
         converted = new bytes(20);
