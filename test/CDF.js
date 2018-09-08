@@ -185,4 +185,11 @@ contract('CDF', function(accounts) {
         await checkRW(instance, 1100000, 0, '0x010203040506');
         await checkRW(instance, 1100000, 6, '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffabaa');
     });
+
+
+    it("test writeUint32", async function() {
+        const instance = await CDF.deployed();
+
+        assert.equal(await instance.writeUint32(120000000), '0x000e2707');
+    });
 });

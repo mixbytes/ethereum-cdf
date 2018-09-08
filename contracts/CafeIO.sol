@@ -116,7 +116,54 @@ contract CafeIO {
 
 
     function read(uint id) public view returns (string name, uint32 latitude, uint32 longitude, address owner) {
+        // init
+        uint chunkNumber;
+        uint itemNumberInChunk;
+        uint chunkDataPosition;
+        uint i;
+        uint chunkDataOffset;
 
+        // TODO code generation
+
+        // name
+        chunkNumber = CDF.chunkNumber(id, name_meta.itemsPerChunkInBits);
+        itemNumberInChunk = CDF.itemNumberInChunk(id, name_meta.itemsPerChunkInBits);
+        chunkDataPosition = CDF.chunkDataPosition("name", chunkNumber);
+
+        chunkDataOffset = 0;
+        for (i = 0; i <= itemNumberInChunk; i++) {
+            (name, chunkDataOffset) = CDF.readString(chunkDataPosition, chunkDataOffset);
+        }
+
+        // latitude
+        chunkNumber = CDF.chunkNumber(id, latitude_meta.itemsPerChunkInBits);
+        itemNumberInChunk = CDF.itemNumberInChunk(id, latitude_meta.itemsPerChunkInBits);
+        chunkDataPosition = CDF.chunkDataPosition("latitude", chunkNumber);
+
+        chunkDataOffset = 0;
+        for (i = 0; i <= itemNumberInChunk; i++) {
+            (latitude, chunkDataOffset) = CDF.readUint32(chunkDataPosition, chunkDataOffset);
+        }
+
+        // longitude
+        chunkNumber = CDF.chunkNumber(id, longitude_meta.itemsPerChunkInBits);
+        itemNumberInChunk = CDF.itemNumberInChunk(id, longitude_meta.itemsPerChunkInBits);
+        chunkDataPosition = CDF.chunkDataPosition("longitude", chunkNumber);
+
+        chunkDataOffset = 0;
+        for (i = 0; i <= itemNumberInChunk; i++) {
+            (longitude, chunkDataOffset) = CDF.readUint32(chunkDataPosition, chunkDataOffset);
+        }
+
+        // owner
+        chunkNumber = CDF.chunkNumber(id, owner_meta.itemsPerChunkInBits);
+        itemNumberInChunk = CDF.itemNumberInChunk(id, owner_meta.itemsPerChunkInBits);
+        chunkDataPosition = CDF.chunkDataPosition("owner", chunkNumber);
+
+        chunkDataOffset = 0;
+        for (i = 0; i <= itemNumberInChunk; i++) {
+            (owner, chunkDataOffset) = CDF.readAddress(chunkDataPosition, chunkDataOffset);
+        }
     }
 
 

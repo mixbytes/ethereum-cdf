@@ -36,4 +36,14 @@ contract CDFTestHelper {
     function load_slot(uint position) public view returns (uint slot) {
         return CDF.load_slot(position);
     }
+
+
+    function writeUint32(uint32 data) public pure returns (bytes converted) {
+        return CDF.writeUint32(data);
+    }
+
+    function readUint32(uint chunkDataPosition_, uint chunkDataOffset) public view
+            returns (uint32 result, uint newChunkDataOffset) {
+        return CDF.readUint32(chunkDataPosition_, chunkDataOffset);
+    }
 }

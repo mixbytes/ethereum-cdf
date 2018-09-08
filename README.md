@@ -13,7 +13,6 @@ At the moment is append-only.
 
 ## TODO
 
-- search by index
 - simple example
 - report, slides
 - code generation
