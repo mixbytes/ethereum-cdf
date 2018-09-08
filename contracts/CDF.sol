@@ -8,20 +8,21 @@ library CDF {
     }
 
 
-    function chunkNumber(uint itemId, uint itemsPerChunkInBits) internal pure returns (uint) {
+    function chunkNumber(uint itemId, uint itemsPerChunkInBits) public pure returns (uint) {
         return itemId >> itemsPerChunkInBits;
     }
 
-    function itemNumberInChunk(uint itemId, uint itemsPerChunkInBits) internal pure returns (uint) {
+    function itemNumberInChunk(uint itemId, uint itemsPerChunkInBits) public pure returns (uint) {
         return itemId & ((1 << itemsPerChunkInBits) - 1);
     }
+
 
     function chunkDataPosition(string fieldName, uint chunkNumber_) internal pure returns (uint) {
         return uint(keccak256(abi.encode("CDF.chunkDataPosition", fieldName, chunkNumber_)));
     }
 
 
-    function unpackWriterState(uint state) internal pure returns (uint32 nextId, uint16[] currentChunkLengths) {
+    function unpackWriterState(uint state) public pure returns (uint32 nextId, uint16[] currentChunkLengths) {
         nextId = uint32(state & 0xFFFFFFFF);
         state = state >> 32;
 
@@ -32,12 +33,12 @@ library CDF {
         }
     }
 
-    function packWriterState(uint32 nextId, uint16[] currentChunkLengths) internal pure returns (uint state) {
+    function packWriterState(uint32 nextId, uint16[] currentChunkLengths) public pure returns (uint state) {
         state = nextId;
         uint bitOffset = 32;
 
         for (uint i = 0; i < MAX_FIELDS; i++) {
-            state = state | (currentChunkLengths[i] << bitOffset);
+            state = state | (uint(currentChunkLengths[i]) << bitOffset);
             bitOffset += 16;
         }
     }
