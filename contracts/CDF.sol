@@ -146,6 +146,24 @@ library CDF {
         }
     }
 
+    function readString(uint chunkDataPosition_, uint chunkDataOffset) internal view
+            returns (string result, uint newChunkDataOffset)
+    {
+        bytes memory raw = readChunkBytes(chunkDataPosition_, chunkDataOffset, 1);
+        uint bytesRead = 1;
+        uint length;
+        if  (raw[0] < 255) {
+            length = uint(raw[0]);
+        }
+        else {
+            bytes memory rawLength = readChunkBytes(chunkDataPosition_, chunkDataOffset + bytesRead, 4);
+            bytesRead += 4;
+            length = uint(rawLength[0]) | (uint(rawLength[1]) << 8) | (uint(rawLength[2]) << 16) | (uint(rawLength[3]) << 24);
+        }
+        result = string(readChunkBytes(chunkDataPosition_, chunkDataOffset + bytesRead, length));
+        bytesRead += length;
+        newChunkDataOffset = chunkDataOffset + bytesRead;
+    }
 
 
     function writeUint32(uint32 data) internal pure returns (bytes converted) {
@@ -157,6 +175,14 @@ library CDF {
         return converted;
     }
 
+    function readUint32(uint chunkDataPosition_, uint chunkDataOffset) internal view
+            returns (uint32 result, uint newChunkDataOffset)
+    {
+        bytes memory raw = readChunkBytes(chunkDataPosition_, chunkDataOffset, 4);
+        result = uint32(raw[0]) | (uint32(raw[1]) << 8) | (uint32(raw[2]) << 16) | (uint32(raw[3]) << 24);
+        newChunkDataOffset = chunkDataOffset + 4;
+    }
+
 
     function writeAddress(address data) internal pure returns (bytes converted) {
         converted = new bytes(20);
@@ -166,6 +192,18 @@ library CDF {
             value = value >> 8;
         }
         return converted;
+    }
+
+    function readAddress(uint chunkDataPosition_, uint chunkDataOffset) internal view
+            returns (address result, uint newChunkDataOffset)
+    {
+        bytes memory raw = readChunkBytes(chunkDataPosition_, chunkDataOffset, 20);
+        uint value;
+        for (uint i = 0; i < 20; i++) {
+            value = (value << 8) | uint(raw[19 - i]);
+        }
+        result = address(value);
+        newChunkDataOffset = chunkDataOffset + 20;
     }
 
 
