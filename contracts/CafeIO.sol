@@ -18,11 +18,35 @@ contract CafeIO {
 
 
     function write(string name, uint32 latitude, uint32 longitude, address owner) public returns (uint id) {
-        uint this_id = next_id++;
+        uint32 nextId;
+        uint16[] memory currentChunkLengths;
+        (nextId, currentChunkLengths) = CDF.unpackWriterState(writerState);
 
-        uint name_chunk_no = CDF.chunkNumber(this_id, name_meta.itemsPerChunkInBits);
+        uint thisId = nextId++;
 
-        return this_id;
+        uint fieldNumber = 0;
+        uint chunkNumber;
+        uint itemNumberInChunk;
+        uint chunkDataPosition;
+
+        // name
+        chunkNumber = CDF.chunkNumber(thisId, name_meta.itemsPerChunkInBits);
+        itemNumberInChunk = CDF.itemNumberInChunk(thisId, name_meta.itemsPerChunkInBits);
+        chunkDataPosition = CDF.chunkDataPosition("name", chunkNumber);
+
+        if (0 == itemNumberInChunk) {
+            // starting new chunk
+            currentChunkLengths[fieldNumber] = uint16(0);
+        }
+        uint16 currentChunkLength = currentChunkLengths[fieldNumber];
+
+
+        fieldNumber++;
+
+
+        writerState = CDF.packWriterState(nextId, currentChunkLengths);
+
+        return thisId;
     }
 
 
@@ -37,5 +61,5 @@ contract CafeIO {
     CDF.ColumnMeta owner_meta = CDF.ColumnMeta({itemsPerChunkInBits: 5});
 
 
-    uint private next_id;
+    uint private writerState;
 }
