@@ -1,6 +1,6 @@
 'use strict';
 
-const CDF = artifacts.require('CDF.sol');
+const CDF = artifacts.require('CDFTestHelper.sol');
 
 
 module.exports = function(deployer, network) {

@@ -1,6 +1,6 @@
 'use strict';
 
-const CDF = artifacts.require("CDF.sol");
+const CDF = artifacts.require("CDFTestHelper.sol");
 
 const l = console.log;
 
@@ -56,5 +56,75 @@ contract('CDF', function(accounts) {
         assert.equal(await instance.packWriterState(0, [0, 0, 0, 0, 0, 0]), 0);
         assert((await instance.packWriterState(1, [1, 8, 0, 0, 0, 0])).eq(
             new web3.BigNumber(0x00080001).mul(0x100000000).add(1)));
+    });
+
+    // writeChunkBytes(uint chunkDataPosition, uint chunkDataOffset, bytes buffer)
+
+    it("test writeChunkBytes from scratch", async function() {
+        const instance = await CDF.deployed();
+
+        await instance.writeChunkBytes(200000, 0, '0x00');
+        assert((await instance.load_slot(200000)).eq(new web3.BigNumber('0x0')));
+
+        await instance.writeChunkBytes(300000, 0, '0x01');
+        assert((await instance.load_slot(300000)).eq(new web3.BigNumber('0x01')));
+
+        await instance.writeChunkBytes(400000, 0, '0x0109');
+        assert((await instance.load_slot(400000)).eq(new web3.BigNumber('0x0901')));
+    });
+
+    it("test writeChunkBytes append in the same slot", async function() {
+        const instance = await CDF.deployed();
+
+        await instance.writeChunkBytes(500000, 0, '0x010203040506');
+        await instance.writeChunkBytes(500000, 6, '0x07');
+        assert((await instance.load_slot(500000)).eq(new web3.BigNumber('0x07060504030201')));
+
+        await instance.writeChunkBytes(600000, 0, '0x010203040506');
+        await instance.writeChunkBytes(600000, 6, '0x0708');
+        assert((await instance.load_slot(600000)).eq(new web3.BigNumber('0x0807060504030201')));
+    });
+
+    it("test writeChunkBytes append which fills slot", async function() {
+        const instance = await CDF.deployed();
+
+        await instance.writeChunkBytes(700000, 0, '0x010203040506');
+        await instance.writeChunkBytes(700000, 6, '0xffffffffffffffffffffffffffffffffffffffffffffffffffff');
+        assert((await instance.load_slot(700000)).eq(new web3.BigNumber('0xffffffffffffffffffffffffffffffffffffffffffffffffffff060504030201')));
+        assert((await instance.load_slot(700001)).eq(new web3.BigNumber('0x0')));
+    });
+
+    it("test writeChunkBytes overflows to the next slot", async function() {
+        const instance = await CDF.deployed();
+
+        await instance.writeChunkBytes(800000, 0, '0x01020304050607');
+        await instance.writeChunkBytes(800000, 7, '0xffffffffffffffffffffffffffffffffffffffffffffffffffff');
+        assert((await instance.load_slot(800000)).eq(new web3.BigNumber('0xffffffffffffffffffffffffffffffffffffffffffffffffff07060504030201')));
+        assert((await instance.load_slot(800001)).eq(new web3.BigNumber('0xff')));
+    });
+
+    it("test writeChunkBytes append which fills many slots", async function() {
+        const instance = await CDF.deployed();
+
+        await instance.writeChunkBytes(900000, 0, '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff');
+        assert((await instance.load_slot(900000)).eq(new web3.BigNumber('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff')));
+        assert((await instance.load_slot(900001)).eq(new web3.BigNumber('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff')));
+        assert((await instance.load_slot(900002)).eq(new web3.BigNumber('0x0')));
+
+        await instance.writeChunkBytes(1000000, 0, '0x010203040506');
+        await instance.writeChunkBytes(1000000, 6, '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff');
+        assert((await instance.load_slot(1000000)).eq(new web3.BigNumber('0xffffffffffffffffffffffffffffffffffffffffffffffffffff060504030201')));
+        assert((await instance.load_slot(1000001)).eq(new web3.BigNumber('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff')));
+        assert((await instance.load_slot(1000002)).eq(new web3.BigNumber('0x0')));
+    });
+
+    it("test writeChunkBytes append which fills many slots and overflows", async function() {
+        const instance = await CDF.deployed();
+
+        await instance.writeChunkBytes(1100000, 0, '0x010203040506');
+        await instance.writeChunkBytes(1100000, 6, '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffabaa');
+        assert((await instance.load_slot(1100000)).eq(new web3.BigNumber('0xffffffffffffffffffffffffffffffffffffffffffffffffffff060504030201')));
+        assert((await instance.load_slot(1100001)).eq(new web3.BigNumber('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff')));
+        assert((await instance.load_slot(1100002)).eq(new web3.BigNumber('0xaaab')));
     });
 });
