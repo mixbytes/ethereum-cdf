@@ -22,5 +22,7 @@ At the moment is append-only.
 
 ## Further work
 
+- optional fields
+- fields which are not known beforehand
 - marking deletion of entries using packed ints
 - secondary indexes
