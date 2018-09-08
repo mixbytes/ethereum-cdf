@@ -1,0 +1,25 @@
+{
+  "name": "ethereum-cdf-hackathon",
+  "version": "0.1.0",
+  "description": "Ethereum Columnar Data Storage Format: PoC",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mixbytes/ethereum-cdf"
+  },
+  "keywords": [
+    "MixBytes",
+    "solidity",
+    "Ethereum",
+    "smart-contract",
+    "columnar",
+    "data storage"
+  ],
+  "author": "Eenae",
+  "license": "Apache-2.0",
+  "homepage": "https://mixbytes.io",
+  "devDependencies": {
+    "ganache-cli": "^6.0.0",
+    "truffle": "^4.0.0"
+  }
+}
