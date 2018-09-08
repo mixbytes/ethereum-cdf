@@ -13,10 +13,10 @@ At the moment is append-only.
 
 ## TODO
 
-- code generation
-- write
 - search by index
 - simple example
+- report, slides
+- code generation
 - search by hash
 
 
@@ -24,5 +24,6 @@ At the moment is append-only.
 
 - optional fields
 - fields which are not known beforehand
+- caching data in memory and performing better packing (dict-based, etc)
 - marking deletion of entries using packed ints
 - secondary indexes

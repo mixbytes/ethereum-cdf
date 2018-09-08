@@ -97,6 +97,48 @@ library CDF {
     }
 
 
+    function writeString(string data) internal pure returns (bytes converted) {
+        uint length = bytes(data).length;
+        if (length < 255) {
+            converted = new bytes(length + 1);
+            converted[0] = byte(length);
+            for (uint i = 0; i < length; i++)
+                converted[i + 1] = bytes(data)[i];
+            return converted;
+        }
+        else {
+            converted = new bytes(length + 5);
+            converted[0] = byte(255);
+            converted[1] = byte(length & 0xFF);
+            converted[2] = byte((length >> 8) & 0xFF);
+            converted[3] = byte((length >> 16) & 0xFF);
+            converted[4] = byte((length >> 24) & 0xFF);
+            for (i = 0; i < length; i++)
+                converted[i + 5] = bytes(data)[i];
+            return converted;
+        }
+    }
+
+    function writeUint32(uint32 data) internal pure returns (bytes converted) {
+        converted = new bytes(4);
+        converted[0] = byte(data & 0xFF);
+        converted[1] = byte((data >> 8) & 0xFF);
+        converted[2] = byte((data >> 16) & 0xFF);
+        converted[3] = byte((data >> 24) & 0xFF);
+        return converted;
+    }
+
+    function writeAddress(address data) internal pure returns (bytes converted) {
+        converted = new bytes(20);
+        uint value = uint(data);
+        for (uint i = 0; i < 20; i++) {
+            converted[i] = byte(value & 0xFF);
+            value = value >> 8;
+        }
+        return converted;
+    }
+
+
     uint public constant MAX_FIELDS = 6;
 
 // not implemented in solidity yet
