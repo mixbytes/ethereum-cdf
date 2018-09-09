@@ -6,6 +6,8 @@ Ethereum Columnar Data Storage Format.
 
 Team members: Alexey.
 
+Rinkeby: [0xdbeb21dc05613bda3da2b1f1dbde8741d39ba46a](https://rinkeby.etherscan.io/address/0xdbeb21dc05613bda3da2b1f1dbde8741d39ba46a#code).
+
 
 ## Use cases
 
@@ -69,4 +71,4 @@ Use generated contract as a base contract.
 - fields which are not known beforehand
 - caching data in memory and performing better packing (dict-based, etc)
 - marking deletion of entries using packed ints
-- secondary indexes
+- secondary indexes -> column-oriented DB for EVM! -> better upgradability!
