@@ -2,10 +2,6 @@
 
 Ethereum Columnar Data Storage Format. 
 
-[Slides here](https://docs.google.com/presentation/d/1cRsVw74asH5TrlTbs77IekTY5InHDH-8cgg6g8cowCY/edit?usp=sharing).
-
-Team members: Alexey.
-
 Rinkeby: [0xdbeb21dc05613bda3da2b1f1dbde8741d39ba46a](https://rinkeby.etherscan.io/address/0xdbeb21dc05613bda3da2b1f1dbde8741d39ba46a#code).
 
 
