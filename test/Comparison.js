@@ -6,7 +6,7 @@ const l = console.log;
 
 
 contract('Comparison', function(accounts) {
-    it("compare", async function() {
+    it("Write gas usage compare", async function() {
         for (const objectsNumber of [1, 2, 5, 10, 15, 20, 30]) {
             const instanceColumnar = await Comparison.new();
             const instanceSimple = await Comparison.new();
