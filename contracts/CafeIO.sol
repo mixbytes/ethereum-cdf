@@ -13,10 +13,6 @@ contract CafeIO {
     }
 
 
-    constructor() public {
-    }
-
-
     function write(string name, uint32 latitude, uint32 longitude, address owner) public returns (uint id) {
         // init
         uint32 nextId;

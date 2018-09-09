@@ -1,6 +1,7 @@
-struct Cafe {
-    string name;
-    uint32 latitude;
-    uint32 longitude;
-    address owner;
+struct ValidatorMetadata {
+    string firstName;
+    string lastName;
+    string licenseId;
+    string fullAddress;
+    string zipcode;
 }

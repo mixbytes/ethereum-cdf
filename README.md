@@ -13,9 +13,7 @@ At the moment is append-only.
 
 ## TODO
 
-- simple example
 - report, slides
-- code generation
 - search by hash
 
 
