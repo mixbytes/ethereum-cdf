@@ -1,6 +1,6 @@
 # Ethereum CDF
 
-Ethereum Columnar Data Storage Format.
+Ethereum Columnar Data Storage Format. [Slides here](https://docs.google.com/presentation/d/1cRsVw74asH5TrlTbs77IekTY5InHDH-8cgg6g8cowCY/edit?usp=sharing).
 
 At the moment is append-only.
 
